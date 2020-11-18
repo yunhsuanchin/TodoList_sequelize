@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const db = require('../../models')
+const User = db.User
 
 // go to login page
 router.get('/login', (req, res) => {
@@ -18,7 +20,10 @@ router.get('/register', (req, res) => {
 
 // register request
 router.post('/register', (req, res) => {
-  res.send('register')
+  const { name, email, password, confirmPassword } = req.body
+  console.log(name, email, password, confirmPassword)
+  User.create({ name, email, password })
+    .then(user => res.redirect('/'))
 })
 
 // logout request
