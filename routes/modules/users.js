@@ -1,6 +1,7 @@
 const express = require('express')
-const router = express.Router()
 const db = require('../../models')
+const bcrypt = require('bcryptjs')
+const router = express.Router()
 const User = db.User
 
 // go to login page
@@ -21,9 +22,28 @@ router.get('/register', (req, res) => {
 // register request
 router.post('/register', (req, res) => {
   const { name, email, password, confirmPassword } = req.body
-  console.log(name, email, password, confirmPassword)
-  User.create({ name, email, password })
-    .then(user => res.redirect('/'))
+  User.findOne({ where: { email } })
+    .then(user => {
+      if (user) {
+        console.log('User already exists.')
+        return res.render('register', {
+          name,
+          email,
+          password,
+          confirmPassword
+        })
+      }
+
+      return bcrypt.genSalt(10)
+        .then(salt => bcrypt.hash(password, salt))
+        .then(hash => User.create({
+          name,
+          email,
+          password
+        }))
+        .then(() => res.redirect('/'))
+        .catch(error => console.log(error))
+    })
 })
 
 // logout request
