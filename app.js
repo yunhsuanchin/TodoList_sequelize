@@ -2,7 +2,6 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
 const bodyParser = require('body-parser')
-const bcrypt = require('bcryptjs')
 const routes = require('./routes')
 
 const app = express()
