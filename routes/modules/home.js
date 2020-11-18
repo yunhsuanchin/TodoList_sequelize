@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require('../../models')
 const Todo = db.Todo
 
-// index page
+// home page
 router.get('/', (req, res) => {
   return Todo.findAll({
     raw: true,
