@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const routes = require('./routes')
 const session = require('express-session')
 const usePassport = require('./config/passport')
+const { locals } = require('./middleware/locals')
 
 const app = express()
 const PORT = 3000
@@ -19,6 +20,7 @@ app.use(session({
   saveUninitialized: true
 }))
 usePassport(app)
+app.use(locals)
 app.use(routes)
 
 app.listen(PORT, () => {
