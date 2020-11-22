@@ -1,8 +1,8 @@
 const express = require('express')
+const { truncate } = require('fs')
 const router = express.Router()
 const db = require('../../models')
 const Todo = db.Todo
-const User = db.User
 
 // go to create page
 router.get('/new', (req, res) => {
@@ -10,20 +10,52 @@ router.get('/new', (req, res) => {
 })
 
 // create request
-router.post('/', (req, res) => {
-  const UserId = req.user.id
-  const name = req.body.name
-  return Todo.create({ name, UserId })
-    .then(() => res.redirect('/'))
-    .catch((err) => console.log(err))
+router.post('/', async (req, res) => {
+  try {
+    const UserId = req.user.id
+    await Todo.create({ ...req.body, UserId })
+    res.redirect('/')
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 // go to detail page
-router.get('/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findByPk(id)
-    .then(todo => res.render('detail', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
+router.get('/:id', async (req, res) => {
+  try {
+    const id = req.params.id
+    const todo = await Todo.findByPk(id)
+    res.render('detail', { todo: todo.toJSON() })
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// go to edit page
+router.get('/:id/edit', async (req, res) => {
+  try {
+    const id = req.params.id
+    const todo = await Todo.findByPk(id)
+    res.render('edit', { todo: todo.toJSON() })
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// edit request
+router.put('/:id', async (req, res) => {
+  try {
+    const id = req.params.id
+    const { isDone, name } = req.body
+    const todo = await Todo.findByPk(id)
+    todo.name = name
+    todo.isDone = isDone === 'on'
+
+    await todo.save()
+    res.redirect('/')
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 module.exports = router
