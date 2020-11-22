@@ -10,6 +10,7 @@ const routes = require('./routes')
 const session = require('express-session')
 const usePassport = require('./config/passport')
 const { locals } = require('./middleware/locals')
+const flash = require('connect-flash')
 
 const app = express()
 const PORT = process.env.PORT
@@ -24,6 +25,7 @@ app.use(session({
   saveUninitialized: true
 }))
 usePassport(app)
+app.use(flash())
 app.use(locals)
 app.use(routes)
 
